@@ -21,7 +21,7 @@ resource "aws_instance" "web" {
                   #!/bin/bash
                   sudo su
                   yum -y install httpd
-                  echo "<p> My Instance! </p>" >> /var/www/html/index.html
+                  echo "<p> Webinar ADN! </p>" >> /var/www/html/index.html
                   sudo systemctl enable httpd
                   sudo systemctl start httpd
                   EOF
@@ -30,6 +30,14 @@ resource "aws_instance" "web" {
 	}
 }
 
+resource "aws_security_group" "web-sg" {
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 
 output "web-address" {
