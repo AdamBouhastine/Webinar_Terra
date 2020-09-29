@@ -17,32 +17,21 @@ provider "aws" {
 resource "aws_instance" "web" {
   ami                    = "ami-0a669382ea0feb73a"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
 
-   user_data     = <<-EOF
-                  #!/bin/bash
-                  sudo su
-                  yum -y install httpd
-                  echo "<h1> Axdane Webinar! </h1> <p> Version1 </p>" >> /var/www/html/index.html
-                  sudo systemctl enable httpd
-                  sudo systemctl start httpd
-                  EOF
-}
-
-resource "aws_security_group" "web-sg" {
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+	user_data = << EOF
+		#! /bin/bash
+                sudo apt-get update
+		sudo apt-get install -y apache2
+		sudo systemctl start apache2
+		sudo systemctl enable apache2
+		echo "<h1>Deployed via Terraform</h1>" | sudo tee /var/www/html/index.html
+	EOF
+	tags = {
+		Name = "Terraform"	
 	}
-  ingress{
-	from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks     = ["87.240.71.219/32"]
-  }
 }
+
+
 
 output "web-address" {
   value = "${aws_instance.web.public_dns}:8080"
