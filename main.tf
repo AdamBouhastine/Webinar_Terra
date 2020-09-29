@@ -19,11 +19,14 @@ resource "aws_instance" "web" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.web-sg.id]
 
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, Rafik" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
+   user_data     = <<-EOF
+                  #!/bin/bash
+                  sudo su
+                  yum -y install httpd
+                  echo "<h1> Axdane Webinar! </h1> <p> Version1 </p>" >> /var/www/html/index.html
+                  sudo systemctl enable httpd
+                  sudo systemctl start httpd
+                  EOF
 }
 
 resource "aws_security_group" "web-sg" {
