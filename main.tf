@@ -17,15 +17,14 @@ provider "aws" {
 resource "aws_instance" "web" {
   ami                    = "ami-0a669382ea0feb73a"
   instance_type          = "t2.micro"
-
-	user_data = << EOF
-		#! /bin/bash
-                sudo apt-get update
-		sudo apt-get install -y apache2
-		sudo systemctl start apache2
-		sudo systemctl enable apache2
-		echo "<h1>Deployed via Terraform</h1>" >> sudo tee /var/www/html/index.html
-		EOF
+     user_data     = <<-EOF
+                  #!/bin/bash
+                  sudo su
+                  yum -y install httpd
+                  echo "<p> My Instance! </p>" >> /var/www/html/index.html
+                  sudo systemctl enable httpd
+                  sudo systemctl start httpd
+                  EOF
 	tags = {
 		Name = "Terraform"	
 	}
@@ -34,7 +33,7 @@ resource "aws_instance" "web" {
 
 
 output "web-address" {
-  value = "${aws_instance.web.public_dns}:8080"
+  value = "${aws_instance.web.public_dns}"
 }
 
 
